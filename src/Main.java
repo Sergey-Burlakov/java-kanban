@@ -3,9 +3,9 @@ public class Main {
     public static void main(String[] args) {
         TaskManager kanban = new TaskManager();
         Task task1 = new Task("Магазин", "Пойти в магазин по адресу улица Пушкина");
-        kanban.addMap(task1);
-        Task task2 = new Task("Спорт", "побегать на беговой дорожке", "выполнен");
-        kanban.addMap(task2);
+        kanban.addTask(task1);
+        Task task2 = new Task("Спорт", "побегать на беговой дорожке");
+        kanban.addTask(task2);
 
         System.out.println("\u001b[36;1m"+ "1. Проверка добавления обычных задач" +"\u001b[0m");
         System.out.println(task1.toString());
@@ -13,18 +13,17 @@ public class Main {
         System.out.println();
 
         Epic epic1 = new Epic("Финальное задание №4","господи, успеть все бы сдать");
-        kanban.addMap(epic1);
+        kanban.addEpic(epic1);
         Subtask subtask1 = new Subtask(epic1.getId(),"Дописать тесты","Я очень надеюсь, что у меня " +
-                "программа написана плюс минус правильно", "выполнено");
-        kanban.addMap(subtask1);
-        Subtask subtask2 = new Subtask(epic1.getId(),"Сдать проект","учесть все замечения ревьюера",
-                "в процессе");
-        kanban.addMap(subtask2);
+                "программа написана плюс минус правильно");
+        kanban.addSubtask(subtask1);
+        Subtask subtask2 = new Subtask(epic1.getId(),"Сдать проект","учесть все замечения ревьюера");
+        kanban.addSubtask(subtask2);
 
         Epic epic2 = new Epic("Эпик без описания");
-        kanban.addMap(epic2);
+        kanban.addEpic(epic2);
         Subtask subtask3 = new Subtask(epic2.getId(), "Подзадача");
-        kanban.addMap(subtask3);
+        kanban.addSubtask(subtask3);
 
         System.out.println("\u001b[36;1m"+ "2. Проверка эпиков и подзадач в них" +"\u001b[0m");
         System.out.println(epic1.toString());
@@ -38,7 +37,8 @@ public class Main {
 
         System.out.println("\u001b[36;1m"+ "3. Обновления статусов" +"\u001b[0m");
         subtask3.setStatus(Status.DONE);
-        kanban.getStatusForEpic(epic2.getId());
+       // kanban.update(subtask3);
+        kanban.update(epic2);
         System.out.println(epic2.toString());
         System.out.println(subtask3.toString());
         System.out.println();

@@ -2,48 +2,27 @@ import java.util.HashMap;
 import java.util.Objects;
 
 public class Task {
-   protected String name;
-   protected String description;
-   protected Status status = Status.NEW;
-   protected int id;
+   private String name;
+   private String description;
+   private Status status = Status.NEW;
+   private int id;
 
    public Task(String name) {
-      this.id = TaskManager.getNewId();
       this.name = name;
    }
 
    public Task(String name, String description) {
-
-      this.id = TaskManager.getNewId();
       this.name = name;
       this.description = description;
    }
 
-   public Task(String name, String description, String status){
-      this.id = TaskManager.getNewId();
-      this.name = name;
-      this.description = description;
-      this.status = returnStatusString(status);
-   }
 
    public Task(String name, String description, Status status){
-      this.id = TaskManager.getNewId();
       this.name = name;
       this.description = description;
       this.status = status;
    }
 
-    Status returnStatusString(String nameStatus) {
-      switch (nameStatus) {
-         case "новый":
-            return Status.NEW;
-         case "в процессе":
-            return Status.IN_PROGRESS;
-         case "выполнен":
-            return Status.DONE;
-         default: return Status.NEW;
-      }
-   }
 
    public String getName() {
       return name;
@@ -75,7 +54,6 @@ public class Task {
 
    public void setStatus(Status status) {
       this.status = status;
-
    }
 
    @Override
@@ -96,7 +74,9 @@ public class Task {
       String result = "Task{" +
               "name='" + name + '\'';
               if (description != null){
-                 result = result + ", description.length=" + description.length();
+                 result = result + ", description.length=" + description.length()+ '\'' +
+                         ", status=" + status +
+                         ", id=" + id ;
               } else {
                  result = result + ", description=null'" + '\'' +
                          ", status=" + status +

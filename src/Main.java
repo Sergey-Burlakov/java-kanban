@@ -1,7 +1,8 @@
 public class Main {
 
     public static void main(String[] args) {
-        TaskManager kanban = new TaskManager();
+        // InMemoryTaskManager kanban = new InMemoryTaskManager();
+        TaskManager kanban = Managers.getDefault();
         Task task1 = new Task("Магазин", "Пойти в магазин по адресу улица Пушкина");
         kanban.addTask(task1);
         Task task2 = new Task("Спорт", "побегать на беговой дорожке");
@@ -44,8 +45,8 @@ public class Main {
         System.out.println();
 
         System.out.println("\u001b[36;1m"+ "4. Удаляем епик и подзадачу" +"\u001b[0m");
-        kanban.deletebyIdSubtask(subtask3.getId());
-        kanban.deletebyIdEpic(epic2.getId());
+        kanban.deleteSubtaskById(subtask3.getId());
+        kanban.deleteEpicById(epic2.getId());
         System.out.println(kanban.toString());
     }
 

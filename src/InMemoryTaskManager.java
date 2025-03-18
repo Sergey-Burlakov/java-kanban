@@ -6,33 +6,28 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Task> taskMap = new HashMap<>();
     private HashMap<Integer, Epic> epicMap = new HashMap<>();
     private HashMap<Integer, Subtask> subtaskMap = new HashMap<>();
-    private HistoryManager historyManager;
     private int idCounter = 0;
 
-    public InMemoryTaskManager(HistoryManager historyManager){
-        this.historyManager = historyManager;
-
-    }
-
-    public HistoryManager getHistoryManager(){
-        return this.historyManager;
-    }
+    @Override
     public List<Task> getHistory() {
-        return historyManager.getHistory();
+        return Managers.getDefaultHistory().getHistory();
     }
 
     @Override
     public ArrayList<Task> getTasks() {
         return new ArrayList<>(this.taskMap.values());
     }
+
     @Override
     public ArrayList<Epic> getEpics() {
         return new ArrayList<>(this.epicMap.values());
     }
+
     @Override
     public ArrayList<Subtask> getSubtasks() {
         return new ArrayList<>(this.subtaskMap.values());
     }
+
     @Override
     public ArrayList<Subtask> getEpicSubtasks(int epicId) {
         Epic epic = getEpicById(epicId);
@@ -46,15 +41,18 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return listSubtasksInEpic;
     }
+
     @Override
     public void deleteAllTasks() {
         taskMap.clear();
     }
+
     @Override
     public void deleteAllEpics() {
         epicMap.clear();
         subtaskMap.clear();
     }
+
     @Override
     public void deleteAllSubtasks() {
         for (Epic epic : (getEpics())) {
@@ -68,7 +66,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getTaskById(int id) {
         Task task = taskMap.get(id);
         if (task != null) {
-            historyManager.add(task);
+            Managers.getDefaultHistory().add(task);
         }
         return task;
     }
@@ -77,7 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpicById(int id) {
         Epic epic = epicMap.get(id);
         if (epic != null) {
-            historyManager.add(epic);
+            Managers.getDefaultHistory().add(epic);
         }
         return epic;
     }
@@ -86,20 +84,23 @@ public class InMemoryTaskManager implements TaskManager {
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtaskMap.get(id);
         if (subtask != null) {
-            historyManager.add(subtask);
+            Managers.getDefaultHistory().add(subtask);
         }
         return subtask;
     }
+
     @Override
     public void addTask(Task task) {
         task.setId(getNewId());
         taskMap.put(task.getId(), task);
     }
+
     @Override
     public void addEpic(Epic epic) {
         epic.setId(getNewId());
         epicMap.put(epic.getId(), epic);
     }
+
     @Override
     public void addSubtask(Subtask subtask) {
         int epicId = subtask.getEpicId();
@@ -111,6 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
             getStatusForEpic(epicId);
         }
     }
+
     @Override
     public boolean update(Task task) {
         if (checkTaskInMap(task)) {
@@ -120,6 +122,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     @Override
     public boolean update(Epic epic) {
         if (checkEpicInMap(epic)) {
@@ -130,6 +133,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     @Override
     public boolean update(Subtask subtask) {
         if (checkSubtaskInMap(subtask)) {
@@ -141,6 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     private boolean checkTaskInMap(Task task) {
         int taskId = task.getId();
         if (taskMap.containsKey(taskId)) {
@@ -148,6 +153,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     private boolean checkEpicInMap(Epic epic) {
         int epicId = epic.getId();
         if (epicMap.containsKey(epicId)) {
@@ -155,6 +161,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     private boolean checkSubtaskInMap(Subtask subtask) {
         int subtaskId = subtask.getId();
         if (subtaskMap.containsKey(subtaskId) &&
@@ -163,6 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     @Override
     public boolean deleteTaskById(int id) {
         if (taskMap.containsKey(id)) {
@@ -171,11 +179,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     @Override
     public boolean deleteEpicById(int id) {
         if (epicMap.containsKey(id)) {
             epicMap.remove(id);
-            for (Subtask subtask : getEpicSubtasks(id)){
+            for (Subtask subtask : getEpicSubtasks(id)) {
                 subtaskMap.remove(subtask.getId());
                 getEpicMapBySubtask(subtask).remove(subtask.getId());
             }
@@ -183,6 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     @Override
     public boolean deleteSubtaskById(int id) {
         Subtask subtask = subtaskMap.get(id);
@@ -194,6 +204,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
     private HashMap<Integer, Subtask> getEpicMapBySubtask(Subtask subtask) {
         int epicId = subtask.getEpicId();
         if (!epicMap.containsKey(epicId)) {
@@ -207,6 +218,7 @@ public class InMemoryTaskManager implements TaskManager {
             return null;
         }
     }
+
     private boolean isAllSubtaskDone(ArrayList<Subtask> listInEpic) {
         int size = listInEpic.size();
         int cheker = 0;
@@ -231,6 +243,7 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.IN_PROGRESS);
         }
     }
+
     @Override
     public String toString() {
         return "TaskManager{" +
@@ -239,6 +252,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ", subtaskMap=" + subtaskMap +
                 '}';
     }
+
     private int getNewId() {
         return ++idCounter;
     }

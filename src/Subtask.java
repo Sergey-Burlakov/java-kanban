@@ -1,5 +1,3 @@
-import java.util.HashMap;
-
 public class Subtask extends Task {
     private int epicId;
 
@@ -23,7 +21,6 @@ public class Subtask extends Task {
         }
         this.epicId = epicId;
     }
-
 
     public String toString() {
         String result = "Subtask{" +

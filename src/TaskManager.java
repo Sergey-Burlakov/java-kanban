@@ -42,5 +42,4 @@ public interface TaskManager {
     boolean deleteEpicById(int id);
 
     boolean deleteSubtaskById(int id);
-
 }

@@ -27,7 +27,7 @@ public class Subtask extends Task {
                 "epicId='" + epicId + '\'' +
                 "name='" + getName() + '\'';
         if (getDescription() != null) {
-            result = result + ", description.length=" + getDescription().length() + '\'' + //
+            result = result + ", description.length=" + getDescription().length() + '\'' +
                     ", status=" + getStatus() +
                     ", id=" + getId();
         } else {

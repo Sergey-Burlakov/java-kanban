@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager {
+public class InMemoryHistoryManager implements HistoryManager {//
 
     private Node head;
     private Node tail;

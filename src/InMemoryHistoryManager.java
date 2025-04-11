@@ -8,48 +8,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
     private HashMap<Integer, Node> historyMap = new HashMap<>();
 
-    public void linkLast(Task task) {
-        Node newNode = new Node(task);
-        if (this.head == null) {
-            head = newNode;
-            tail = newNode;
-        } else {
-            Node oldTail = this.tail;
-            oldTail.next = newNode;
-            newNode.prev = oldTail;
-            this.tail = newNode;
-        }
-    }
-
-    private List<Task> getTasks() {
-        List<Task> tasksList = new ArrayList<>();
-        Node currentNode = this.head;
-        while (currentNode != null) {
-            tasksList.add(currentNode.task); // Сразу добавляем задачу из узла
-            currentNode = currentNode.next;
-        }
-        return tasksList;
-    }
-
-    public void removeNode(Node node) {
-        if (node == this.tail && node == this.head) {
-            this.head = null;
-            this.tail = null;
-            // Удаляем голову
-        } else if (node == this.head) {
-            this.head = node.next;
-            this.head.prev = null;
-            // Удаляем хвост
-        } else if (node == this.tail) {
-            this.tail = node.prev;
-            this.tail.next = null;
-            // Удаляем узел из середины
-        } else {
-            node.prev.next = node.next;
-            node.next.prev = node.prev;
-        }
-    }
-
     @Override
     public List<Task> getHistory() {
         return getTasks();
@@ -72,5 +30,47 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
         removeNode(historyMap.get(id));
         historyMap.remove(id);
+    }
+
+    private void removeNode(Node node) {
+        if (node == this.tail && node == this.head) {
+            this.head = null;
+            this.tail = null;
+            // Удаляем голову
+        } else if (node == this.head) {
+            this.head = node.next;
+            this.head.prev = null;
+            // Удаляем хвост
+        } else if (node == this.tail) {
+            this.tail = node.prev;
+            this.tail.next = null;
+            // Удаляем узел из середины
+        } else {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+        }
+    }
+
+    private List<Task> getTasks() {
+        List<Task> tasksList = new ArrayList<>();
+        Node currentNode = this.head;
+        while (currentNode != null) {
+            tasksList.add(currentNode.task); // Сразу добавляем задачу из узла
+            currentNode = currentNode.next;
+        }
+        return tasksList;
+    }
+
+    private void linkLast(Task task) {
+        Node newNode = new Node(task);
+        if (this.head == null) {
+            head = newNode;
+            tail = newNode;
+        } else {
+            Node oldTail = this.tail;
+            oldTail.next = newNode;
+            newNode.prev = oldTail;
+            this.tail = newNode;
+        }
     }
 }

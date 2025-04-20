@@ -3,7 +3,8 @@ import java.util.List;
 
 public interface TaskManager {
 
-     List<Task> getHistory();
+    List<Task> getHistory();
+
     ArrayList<Task> getTasks();
 
     ArrayList<Epic> getEpics();
@@ -41,5 +42,4 @@ public interface TaskManager {
     boolean deleteEpicById(int id);
 
     boolean deleteSubtaskById(int id);
-
 }

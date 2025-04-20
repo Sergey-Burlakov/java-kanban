@@ -1,13 +1,14 @@
 import java.util.HashMap;
 
-public class Epic extends Task{
+public class Epic extends Task {
 
-    private HashMap <Integer, Subtask> subtasksMapInEpic = new HashMap<>();
-    public Epic(String name)
-    {
+    private HashMap<Integer, Subtask> subtasksMapInEpic = new HashMap<>();
+
+    public Epic(String name) {
         super(name);
     }
-    public Epic(String name, String description){
+
+    public Epic(String name, String description) {
         super(name, description);
     }
 

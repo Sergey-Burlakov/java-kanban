@@ -9,9 +9,4 @@ class ManagersTest {
         TaskManager manager = Managers.getDefault();
         assertNotNull(manager, "Менеджер не должен быть null");
     }
-
-
-
-
-
 }

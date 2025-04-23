@@ -258,6 +258,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ", subtaskMap=" + subtaskMap +
                 '}';
     }
+
     private int getNewId() {
         return ++idCounter;
     }

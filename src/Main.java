@@ -1,5 +1,5 @@
 public class Main {
-
+//проверка отправки
     public static void main(String[] args) {
         TaskManager kanban = Managers.getDefault();
         Task task1 = new Task("Магазин", "Пойти в магазин по адресу улица Пушкина");

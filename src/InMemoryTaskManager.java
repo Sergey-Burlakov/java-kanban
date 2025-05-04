@@ -1,6 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Task> taskMap = new HashMap<>();
@@ -31,17 +30,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getEpicSubtasks(int epicId) {
-        Epic epic = getEpicById(epicId);
-        ArrayList<Subtask> listSubtasksInEpic = new ArrayList<>();
-        if (epic == null) {
-            return listSubtasksInEpic;
+    public List<Subtask> getEpicSubtasks(int epicId) {
+        Epic epic = epicMap.get(epicId);
+        if (epic == null){
+            return new ArrayList<>();
         }
-        HashMap<Integer, Subtask> mapInEpic = epic.getSubtasksMapInEpic();
-        for (Subtask object : mapInEpic.values()) {
-            listSubtasksInEpic.add(object);
-        }
-        return listSubtasksInEpic;
+        return epic.getSubtasksMapInEpic().values()
+                .stream()
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -233,7 +229,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private boolean isAllSubtaskDone(ArrayList<Subtask> listInEpic) {
+    private boolean isAllSubtaskDone(List<Subtask> listInEpic) {
         int size = listInEpic.size();
         int cheker = 0;
         for (Subtask sub : listInEpic) {

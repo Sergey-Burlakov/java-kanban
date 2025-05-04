@@ -1,8 +1,12 @@
 import java.io.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File file;
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
 
     public FileBackedTaskManager(File file) {
         this.file = file;
@@ -126,6 +130,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String nameString = taskArray[2];
         Status status = Status.valueOf(taskArray[3].toUpperCase());
         String descriptionString = taskArray[4];
+        String startTimeString = taskArray[6];
+        String durationString = taskArray[7];
 
         Task taskObject = null;
         switch (type) {
@@ -136,7 +142,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 taskObject = new Subtask(epicId, nameString, descriptionString);
             }
         }
-
+        if (!startTimeString.isEmpty() && (type == TaskType.TASK || type == TaskType.SUBTASK)){
+            taskObject.setStartTime(LocalDateTime.parse(startTimeString, FileBackedTaskManager.DATE_TIME_FORMATTER));
+        }
+        if (!durationString.isEmpty()&& (type == TaskType.TASK || type == TaskType.SUBTASK)){
+            taskObject.setDuration(Duration.ofMinutes(Long.parseLong(durationString)));
+        }
         taskObject.setId(id);
         if (type != TaskType.EPIC) {
             taskObject.setStatus(status);
@@ -146,6 +157,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private static String taskToString(Task task) {
         String epicIdCsv = "";
+        String startTimeStr = "";
+        String durationStr = "";
         String type = switch (task) {
             case Subtask s -> "SUBTASK";
             case Epic e -> "EPIC";
@@ -155,8 +168,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (task instanceof Subtask s) {
             epicIdCsv = String.valueOf(s.getEpicId());
         }
-        return String.format("%d,%s,%s,%s,%s,%s", task.getId(), type, task.getName(), task.getStatus(),
-                descriptionForCsv, epicIdCsv);
+        if (task.getStartTime().isPresent()){
+            startTimeStr = task.getStartTime().get().format(FileBackedTaskManager.DATE_TIME_FORMATTER);
+        }
+        if (task.getDuration().isPresent()){
+            durationStr = String.valueOf(task.getDuration().get().toMinutes());
+        }
+        return String.format("%d,%s,%s,%s,%s,%s,%s,%s", task.getId(), type, task.getName(), task.getStatus(),
+                descriptionForCsv, epicIdCsv, startTimeStr,durationStr);
     }
 
     private void addEnterEpics() {
@@ -167,6 +186,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
             super.getStatusForEpic(epic.getId());
+            epic.calculateTimesEpic();
         }
     }
 
@@ -183,7 +203,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private void save() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,epic,startTime,durationMinutes\n");
             List<Task> tasksList = getTasks();
             List<Epic> epicList = getEpics();
             List<Subtask> subtasksList = getSubtasks();

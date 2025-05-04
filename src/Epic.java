@@ -46,6 +46,15 @@ public class Epic extends Task {
         }
     }
 
+    @Override
+    public void setDuration(Duration duration) {
+        throw new UnsupportedOperationException("Нельзя устанавливать startTime напрямую для Epic.");
+    }
+    @Override
+    public void setStartTime(LocalDateTime startTime) {
+        throw new UnsupportedOperationException("Нельзя устанавливать duration напрямую для Epic.");
+    }
+
 
     public LocalDateTime getEpicStartTime() {
         return epicStartTime;

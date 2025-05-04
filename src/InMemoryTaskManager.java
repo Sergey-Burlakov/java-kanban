@@ -57,11 +57,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubtasks() {
-        for (Epic epic : (getEpics())) {
-            epic.getSubtasksMapInEpic().clear();
-            epic.setStatus(Status.NEW);
-        }
         subtaskMap.clear();
+            getEpics()
+                    .stream()
+                    .forEach(epic ->{
+                        getStatusForEpic(epic.getId());
+                        epic.getSubtasksMapInEpic().clear();
+                        epic.calculateTimesEpic();
+                    });
     }
 
     @Override
@@ -112,6 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
             subtaskMap.put(subtask.getId(), subtask);
             getEpicMapBySubtask(subtask).put(subtask.getId(), subtask);
             getStatusForEpic(epicId);
+            epicObject.calculateTimesEpic();
         }
     }
 
@@ -140,9 +144,11 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean update(Subtask subtask) {
         if (checkSubtaskInMap(subtask)) {
             int subTaskId = subtask.getId();
+            Epic epicObject = epicMap.get(subtask.getEpicId());
             subtaskMap.put(subTaskId, subtask);
             getEpicMapBySubtask(subtask).put(subTaskId, subtask);
             getStatusForEpic(subtask.getEpicId());
+            epicObject.calculateTimesEpic();
             return true;
         }
         return false;
@@ -202,10 +208,12 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean deleteSubtaskById(int id) {
         Subtask subtask = subtaskMap.get(id);
         if (subtask != null && getEpicMapBySubtask(subtask) != null) {
+            Epic epicObject = epicMap.get(subtask.getEpicId());
             subtaskMap.remove(id);
-            getEpicMapBySubtask(subtask).remove(id);
+            epicObject.getSubtasksMapInEpic().remove(id);
             getStatusForEpic(subtask.getEpicId());
             historyManager.remove(id);
+            epicObject.calculateTimesEpic();
             return true;
         }
         return false;

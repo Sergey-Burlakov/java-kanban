@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getEpicSubtasks(int epicId) {
         Epic epic = epicMap.get(epicId);
-        if (epic == null){
+        if (epic == null) {
             return new ArrayList<>();
         }
         return epic.getSubtasksMapInEpic().values()
@@ -54,13 +55,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllSubtasks() {
         subtaskMap.clear();
-            getEpics()
-                    .stream()
-                    .forEach(epic ->{
-                        getStatusForEpic(epic.getId());
-                        epic.getSubtasksMapInEpic().clear();
-                        epic.calculateTimesEpic();
-                    });
+        getEpics()
+                .stream()
+                .forEach(epic -> {
+                    getStatusForEpic(epic.getId());
+                    epic.getSubtasksMapInEpic().clear();
+                    epic.calculateTimesEpic();
+                });
     }
 
     @Override
@@ -149,6 +150,29 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return false;
     }
+
+    protected final Set<Task> prioritizedTasks = new TreeSet<>(new Comparator<Task>() {
+        @Override
+        public int compare(Task task1, Task task2) {
+            if (task1.getStartTime().isPresent() && task2.getStartTime().isPresent()) {
+                LocalDateTime time1 = task1.getStartTime().get();
+                LocalDateTime time2 = task2.getStartTime().get();
+                int timeCompare = time1.compareTo(time2);
+                if (timeCompare == 0) {
+                    return Integer.compare(task1.getId(), task2.getId());
+                } else {
+                    return timeCompare;
+                }
+            }
+            if (task1.getStartTime().isPresent()) {
+                return -1;
+            } else if (task2.getStartTime().isPresent()) {
+                return 1;
+            } else {
+                return Integer.compare(task1.getId(), task2.getId());
+            }
+        }
+    });
 
     private boolean checkTaskInMap(Task task) {
         int taskId = task.getId();

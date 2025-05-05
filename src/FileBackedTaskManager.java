@@ -102,7 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return false;
     }
 
-   public static FileBackedTaskManager loadFromFile(File file) {
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager fileTaskManager = new FileBackedTaskManager(file);
         int maxID = 0;
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
@@ -142,10 +142,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 taskObject = new Subtask(epicId, nameString, descriptionString);
             }
         }
-        if (!startTimeString.isEmpty() && (type == TaskType.TASK || type == TaskType.SUBTASK)){
+        if (!startTimeString.isEmpty() && (type == TaskType.TASK || type == TaskType.SUBTASK)) {
             taskObject.setStartTime(LocalDateTime.parse(startTimeString, FileBackedTaskManager.DATE_TIME_FORMATTER));
         }
-        if (!durationString.isEmpty()&& (type == TaskType.TASK || type == TaskType.SUBTASK)){
+        if (!durationString.isEmpty() && (type == TaskType.TASK || type == TaskType.SUBTASK)) {
             taskObject.setDuration(Duration.ofMinutes(Long.parseLong(durationString)));
         }
         taskObject.setId(id);
@@ -168,14 +168,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (task instanceof Subtask s) {
             epicIdCsv = String.valueOf(s.getEpicId());
         }
-        if (task.getStartTime().isPresent()){
+        if (task.getStartTime().isPresent()) {
             startTimeStr = task.getStartTime().get().format(FileBackedTaskManager.DATE_TIME_FORMATTER);
         }
-        if (task.getDuration().isPresent()){
+        if (task.getDuration().isPresent()) {
             durationStr = String.valueOf(task.getDuration().get().toMinutes());
         }
         return String.format("%d,%s,%s,%s,%s,%s,%s,%s", task.getId(), type, task.getName(), task.getStatus(),
-                descriptionForCsv, epicIdCsv, startTimeStr,durationStr);
+                descriptionForCsv, epicIdCsv, startTimeStr, durationStr);
     }
 
     private void addEnterEpics() {

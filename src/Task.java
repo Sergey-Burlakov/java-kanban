@@ -1,6 +1,5 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -49,7 +48,7 @@ public class Task {
         this.duration = duration;
     }
 
-    public Optional<LocalDateTime> getEndTime(){
+    public Optional<LocalDateTime> getEndTime() {
         if (duration == null || startTime == null) {
             return Optional.empty();
         } else {
@@ -97,16 +96,16 @@ public class Task {
         this.status = status;
     }
 
-    public Optional<Duration> getDuration () {
-        if (duration == null){
+    public Optional<Duration> getDuration() {
+        if (duration == null) {
             return Optional.empty();
         } else {
             return Optional.of(duration);
         }
     }
 
-    public Optional<LocalDateTime>  getStartTime() {
-        if (startTime == null){
+    public Optional<LocalDateTime> getStartTime() {
+        if (startTime == null) {
             return Optional.empty();
         } else {
             return Optional.of(startTime);

@@ -113,7 +113,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 if (task.getId() > maxID) {
                     maxID = task.getId();
                 }
-                fileTaskManager.addTasksInMaps(task);
+                fileTaskManager.addTasksInRAM(task);
             }
         } catch (IOException e) {
             throw new ManagerLoadException("Ошибка загрузки из файла " + file.getPath(), e);
@@ -190,7 +190,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private void addTasksInMaps(Task task) {
+    private void addTasksInRAM(Task task) {
         int id = task.getId();
         if (task instanceof Epic epic) {
             super.epicMap.put(id, epic);
@@ -198,6 +198,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             super.subtaskMap.put(id, subtask);
         } else {
             super.taskMap.put(id, task);
+        }
+        if (task.getStartTime().isPresent()) {
+            prioritizedTasks.add(task);
         }
     }
 

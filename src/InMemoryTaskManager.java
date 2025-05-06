@@ -1,3 +1,4 @@
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,6 +13,52 @@ public class InMemoryTaskManager implements TaskManager {
 
     public List<Task> getPrioritizedTasks() {
         return List.copyOf(prioritizedTasks);
+    }
+
+    public boolean isOverlap(Task task1, Task task2) {
+        if (isHaveTime(task1) && (isHaveTime(task2))) {
+            LocalDateTime start1;
+            LocalDateTime end1;
+            LocalDateTime start2;
+            LocalDateTime end2;
+            if (isThisEpic(task1)) {
+                start1 = ((Epic) task1).getEpicStartTime();
+                end1 = ((Epic) task1).getEpicEndTime();
+            } else {
+                start1 = task1.getStartTime().get();
+                end1 = task1.getEndTime().get();
+            }
+            if (isThisEpic(task2)) {
+                start2 = ((Epic) task2).getEpicStartTime();
+                end2 = ((Epic) task2).getEpicEndTime();
+            } else {
+                start2 = task2.getStartTime().get();
+                end2 = task2.getEndTime().get();
+            }
+
+
+        } else return false;
+    }
+
+    public boolean isThisEpic(Task task) {
+        if (task instanceof Epic) {
+            return true;
+        } else return false;
+    }
+
+    public boolean isHaveTime(Task task) {
+        if (isThisEpic(task)) {
+            if (((Epic) task).getEpicEndTime() != null &&
+                    ((Epic) task).getEpicStartTime() != null &&
+                    ((Epic) task).getEpicDuration() != Duration.ZERO) {
+                return true;
+            }
+        } else if (task.getStartTime().isPresent() &&
+                task.getEndTime().isPresent() &&
+                !task.getDuration().get().isZero()) {
+            return true;
+        }
+        return false;
     }
 
     @Override

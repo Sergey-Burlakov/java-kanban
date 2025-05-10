@@ -342,7 +342,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private void generateTaskOverlapException(ContextOperation context, Task addedTask, Task taskOverlap) {
-        DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
         String mutable = "";
         switch (context) {
             case ADD -> mutable = "добавить";
@@ -359,11 +359,11 @@ public class InMemoryTaskManager implements TaskManager {
                 taskOverlap.getName(),
                 taskOverlap.getId(),
                 addedTask.getId(),
-                addedTask.getStartTime().map(dt -> dt.format(DATE_TIME_FORMATTER)).orElse("N/A"),
-                addedTask.getEndTime().map(dt -> dt.format(DATE_TIME_FORMATTER)).orElse("N/A"),
+                addedTask.getStartTime().map(dt -> dt.format(dateTimeFormatter)).orElse("N/A"),
+                addedTask.getEndTime().map(dt -> dt.format(dateTimeFormatter)).orElse("N/A"),
                 taskOverlap.getId(),
-                taskOverlap.getStartTime().map(dt -> dt.format(DATE_TIME_FORMATTER)).orElse("N/A"),
-                taskOverlap.getEndTime().map(dt -> dt.format(DATE_TIME_FORMATTER)).orElse("N/A")
+                taskOverlap.getStartTime().map(dt -> dt.format(dateTimeFormatter)).orElse("N/A"),
+                taskOverlap.getEndTime().map(dt -> dt.format(dateTimeFormatter)).orElse("N/A")
         ));
     }
 

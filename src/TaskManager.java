@@ -3,6 +3,8 @@ import java.util.List;
 
 public interface TaskManager {
 
+    List<Task> getPrioritizedTasks();
+
     List<Task> getHistory();
 
     ArrayList<Task> getTasks();

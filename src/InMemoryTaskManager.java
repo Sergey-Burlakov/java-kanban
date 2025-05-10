@@ -36,31 +36,30 @@ public class InMemoryTaskManager implements TaskManager {
                 start2 = task2.getStartTime().get();
                 end2 = task2.getEndTime().get();
             }
-            if ((end1.isBefore(start2) || end1.isEqual(start2)) || (start1.isAfter(end2) || start1.isEqual(end2))){
-            return false;
+            if ((end1.isBefore(start2) || end1.isEqual(start2)) || (start1.isAfter(end2) || start1.isEqual(end2))) {
+                return false;
             } else return true;
-        }
-        else return false;
+        } else return false;
     }
 
-    public boolean isOverlapAll(Task task){
-        if (!isHaveTime(task)){
-        return false;
-    }
+    public boolean isOverlapAll(Task task) {
+        if (!isHaveTime(task)) {
+            return false;
+        }
         return getPrioritizedTasks()
                 .stream()
                 .filter(taskFilt -> !taskFilt.equals(task))
-                .anyMatch(taskFilt -> isOverlap(taskFilt,task));
+                .anyMatch(taskFilt -> isOverlap(taskFilt, task));
     }
 
-    public Optional<Task> whoIsOverlap(Task task){
-        if (!isHaveTime(task)){
+    public Optional<Task> whoIsOverlap(Task task) {
+        if (!isHaveTime(task)) {
             return Optional.empty();
         }
         return getPrioritizedTasks()
                 .stream()
                 .filter(taskFilt -> !taskFilt.equals(task))
-                .filter(taskFilt -> isOverlap(taskFilt,task))
+                .filter(taskFilt -> isOverlap(taskFilt, task))
                 .findFirst();
     }
 
@@ -165,7 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) {
         Optional<Task> overLapTask = whoIsOverlap(task);
-        if (overLapTask.isPresent()){
+        if (overLapTask.isPresent()) {
             generateTaskOverlapException(ContextOperation.ADD, task, overLapTask.get());
         }
         task.setId(getNewId());
@@ -184,7 +183,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(Subtask subtask) {
         Optional<Task> overLapSubtask = whoIsOverlap(subtask);
-        if (overLapSubtask.isPresent()){
+        if (overLapSubtask.isPresent()) {
             generateTaskOverlapException(ContextOperation.ADD, subtask, overLapSubtask.get());
         }
         int epicId = subtask.getEpicId();
@@ -204,7 +203,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean update(Task task) {
         Optional<Task> overLapTask = whoIsOverlap(task);
-        if (overLapTask.isPresent()){
+        if (overLapTask.isPresent()) {
             generateTaskOverlapException(ContextOperation.UPDATE, task, overLapTask.get());
         }
         int taskId = task.getId();
@@ -223,7 +222,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean update(Subtask subtask) {
         Optional<Task> overLapSubtask = whoIsOverlap(subtask);
-        if (overLapSubtask.isPresent()){
+        if (overLapSubtask.isPresent()) {
             generateTaskOverlapException(ContextOperation.UPDATE, subtask, overLapSubtask.get());
         }
         Subtask oldSubtask = subtaskMap.get(subtask.getId());
@@ -245,10 +244,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean update(Epic epic) {
-        if (checkEpicInMap(epic)) {
-            int epicId = epic.getId();
-            epicMap.put(epicId, epic);
-            getStatusForEpic(epicId);
+        Epic existingEpic = epicMap.get(epic.getId());
+        if (existingEpic != null) {
+            existingEpic.setName(epic.getName());
+            existingEpic.setDescription(epic.getDescription());
+            getStatusForEpic(existingEpic.getId());
             return true;
         }
         return false;
@@ -341,18 +341,18 @@ public class InMemoryTaskManager implements TaskManager {
         return false;
     }
 
-    private void generateTaskOverlapException(ContextOperation context, Task addedTask, Task taskOverlap){
+    private void generateTaskOverlapException(ContextOperation context, Task addedTask, Task taskOverlap) {
         DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
         String mutable = "";
-        switch (context){
+        switch (context) {
             case ADD -> mutable = "добавить";
             case UPDATE -> mutable = "обновить";
         }
         final String contextS = mutable;
         throw new TaskOverlapException(String.format(
-                "Невозможно %s задачу «%s» ID = %d Обнаружено пересечение по времени с задачью «%s» ID = %d\n " +
-                        "Время задачи ID = %d: с %s по %s\n" +
-                        "Время задачи ID = %d: с %s по %s",
+                "Невозможно %s задачу «%s» ID=%d. Обнаружено пересечение по времени с задачью «%s» ID=%d\n" +
+                        "Время задачи ID=%d: с %s по %s\n" +
+                        "Время задачи ID=%d: с %s по %s",
                 contextS,
                 addedTask.getName(),
                 addedTask.getId(),

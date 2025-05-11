@@ -1,18 +1,36 @@
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 
 public class Task {
     private String name;
     private String description;
     private Status status = Status.NEW;
     private int id;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public Task(String name) {
         this.name = name;
     }
 
+    public Task(String name, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+    }
+
+    public Task(String name, String description, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
 
@@ -22,6 +40,21 @@ public class Task {
         this.status = status;
     }
 
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public Optional<LocalDateTime> getEndTime() {
+        if (duration == null || startTime == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(startTime.plus(duration));
+        }
+    }
 
     public String getName() {
         return name;
@@ -53,6 +86,30 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Optional<Duration> getDuration() {
+        if (duration == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(duration);
+        }
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public Optional<LocalDateTime> getStartTime() {
+        if (startTime == null) {
+            return Optional.empty();
+        } else {
+            return Optional.of(startTime);
+        }
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     @Override

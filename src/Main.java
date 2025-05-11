@@ -6,8 +6,8 @@ public class Main {
         Task task2 = new Task("Спорт", "побегать на беговой дорожке");
         kanban.addTask(task2);
         System.out.println("\u001b[36;1m" + "1. Проверка добавления обычных задач" + "\u001b[0m");
-        System.out.println(task1.toString());
-        System.out.println(task2.toString());
+        System.out.println(task1);
+        System.out.println(task2);
         System.out.println();
         Epic epic1 = new Epic("Финальное задание №4", "господи, успеть все бы сдать");
         kanban.addEpic(epic1);
@@ -21,22 +21,22 @@ public class Main {
         Subtask subtask3 = new Subtask(epic2.getId(), "Подзадача");
         kanban.addSubtask(subtask3);
         System.out.println("\u001b[36;1m" + "2. Проверка эпиков и подзадач в них" + "\u001b[0m");
-        System.out.println(epic1.toString());
-        System.out.println(subtask1.toString());
-        System.out.println(subtask2.toString());
+        System.out.println(epic1);
+        System.out.println(subtask1);
+        System.out.println(subtask2);
         System.out.println();
-        System.out.println(epic2.toString());
-        System.out.println(subtask3.toString());
+        System.out.println(epic2);
+        System.out.println(subtask3);
         System.out.println();
         System.out.println("\u001b[36;1m" + "3. Обновления статусов" + "\u001b[0m");
         subtask3.setStatus(Status.DONE);
         kanban.update(epic2);
-        System.out.println(epic2.toString());
-        System.out.println(subtask3.toString());
+        System.out.println(epic2);
+        System.out.println(subtask3);
         System.out.println();
         System.out.println("\u001b[36;1m" + "4. Удаляем епик и подзадачу" + "\u001b[0m");
         kanban.deleteSubtaskById(subtask3.getId());
         kanban.deleteEpicById(epic2.getId());
-        System.out.println(kanban.toString());
+        System.out.println(kanban);
     }
 }

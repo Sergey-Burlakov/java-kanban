@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -202,13 +203,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         assertEquals(Status.NEW, retrievedEpic.getStatus(), "Статус нового эпика без подзадач должен быть " +
                 "NEW");
-        assertNull(retrievedEpic.getEpicStartTime(), "Время начала нового эпика без подзадач должно быть " +
-                "null");
-        assertNull(retrievedEpic.getEpicEndTime(), "Время окончания нового эпика без подзадач должно быть " +
-                "null");
-        assertEquals(Duration.ZERO, retrievedEpic.getEpicDuration(), "Продолжительность нового эпика без " +
-                "подзадач должна быть ZERO");
-
+        assertFalse(retrievedEpic.getStartTime().isPresent(), "StartTime у пустого эпика должен отсутствовать (Optional.empty)");
+        assertFalse(retrievedEpic.getEndTime().isPresent(), "EndTime у пустого эпика должен отсутствовать (Optional.empty)");
+        assertEquals(Optional.of(Duration.ZERO), retrievedEpic.getDuration(), "Продолжительность нового эпика без подзадач должна быть Optional.of(Duration.ZERO)");
         List<Subtask> subtasks = taskManager.getEpicSubtasks(epicId);
         assertNotNull(subtasks, "Список подзадач не должен быть null");
         assertTrue(subtasks.isEmpty(), "У нового эпика не должно быть подзадач");
@@ -219,19 +216,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Epic originalEpic = new Epic("Старое Имя", "Старое Описание");
         taskManager.addEpic(originalEpic);
         int epicId = originalEpic.getId();
-
         Subtask subtask1 = new Subtask(epicId, "Подзадача 1", "Для проверки времени и статуса",
                 Status.IN_PROGRESS,
                 LocalDateTime.now(), Duration.ofHours(1));
         taskManager.addSubtask(subtask1);
-
         Epic epicBeforeUpdate = taskManager.getEpicById(epicId);
         assertNotNull(epicBeforeUpdate);
         Status statusBeforeUpdate = epicBeforeUpdate.getStatus();
-        LocalDateTime startTimeBeforeUpdate = epicBeforeUpdate.getEpicStartTime();
-        LocalDateTime endTimeBeforeUpdate = epicBeforeUpdate.getEpicEndTime();
-        Duration durationBeforeUpdate = epicBeforeUpdate.getEpicDuration();
-
+        Optional<LocalDateTime> startTimeBeforeUpdateOpt = epicBeforeUpdate.getStartTime();
+        Optional<LocalDateTime> endTimeBeforeUpdateOpt = epicBeforeUpdate.getEndTime();
+        Optional<Duration> durationBeforeUpdateOpt = epicBeforeUpdate.getDuration();
         Epic epicWithUpdates = new Epic("Новое Имя", "Новое Описание");
         epicWithUpdates.setId(epicId);
         boolean isUpdated = taskManager.update(epicWithUpdates);
@@ -239,22 +233,14 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(isUpdated, "Метод update должен вернуть true для существующего эпика");
         assertNotNull(retrievedEpicAfterUpdate, "Эпик не должен быть null после обновления");
         assertEquals(epicId, retrievedEpicAfterUpdate.getId(), "ID эпика не должен измениться");
-        assertEquals("Новое Имя", retrievedEpicAfterUpdate.getName(), "Имя эпика должно было " +
-                "обновиться");
-        assertEquals("Новое Описание", retrievedEpicAfterUpdate.getDescription(), "Описание эпика " +
-                "должно было обновиться");
-        assertEquals(statusBeforeUpdate, retrievedEpicAfterUpdate.getStatus(), "Статус эпика не должен был " +
-                "измениться, если подзадачи не трогали и update(Epic) его корректно пересчитывает");
-        assertEquals(startTimeBeforeUpdate, retrievedEpicAfterUpdate.getEpicStartTime(), "Время начала " +
-                "эпика не должно было измениться");
-        assertEquals(endTimeBeforeUpdate, retrievedEpicAfterUpdate.getEpicEndTime(), "Время окончания эпика " +
-                "не должно было измениться");
-        assertEquals(durationBeforeUpdate, retrievedEpicAfterUpdate.getEpicDuration(), "Продолжительность " +
-                "эпика не должна была измениться");
-        assertEquals(1, taskManager.getEpicSubtasks(epicId).size(), "Количество подзадач не должно " +
-                "было измениться");
+        assertEquals("Новое Имя", retrievedEpicAfterUpdate.getName(), "Имя эпика должно было обновиться");
+        assertEquals("Новое Описание", retrievedEpicAfterUpdate.getDescription(), "Описание эпика должно было обновиться");
+        assertEquals(statusBeforeUpdate, retrievedEpicAfterUpdate.getStatus(), "Статус эпика не должен был измениться...");
+        assertEquals(startTimeBeforeUpdateOpt, retrievedEpicAfterUpdate.getStartTime(), "Время начала эпика не должно было измениться");
+        assertEquals(endTimeBeforeUpdateOpt, retrievedEpicAfterUpdate.getEndTime(), "Время окончания эпика не должно было измениться");
+        assertEquals(durationBeforeUpdateOpt, retrievedEpicAfterUpdate.getDuration(), "Продолжительность эпика не должна была измениться");
+        assertEquals(1, taskManager.getEpicSubtasks(epicId).size(), "Количество подзадач не должно было измениться");
     }
-
     @Test
     void shouldDeleteExistingEpicAndItsSubtasks() {
         Epic epic = new Epic("Эпик на удаление", "Описание");

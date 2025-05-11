@@ -1,12 +1,11 @@
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class Epic extends Task {
 
-    private LocalDateTime epicStartTime;
-    private LocalDateTime epicEndTime;
-    private Duration epicDuration = Duration.ZERO;
+    private HashMap<Integer, Subtask> subtasksMapInEpic = new HashMap<>();
 
     public Epic(String name) {
         super(name);
@@ -14,59 +13,32 @@ public class Epic extends Task {
 
     public Epic(String name, String description) {
         super(name, description);
+        this.setStartTime(null);
+        this.setDuration(Duration.ZERO);
     }
 
     public void calculateTimesEpic() {
         if (subtasksMapInEpic.isEmpty()) {
-            epicStartTime = null;
-            epicEndTime = null;
-            epicDuration = Duration.ZERO;
+            this.setStartTime(null);
+            this.setDuration(Duration.ZERO);
         } else {
-            LocalDateTime minStartTime = null;
-            LocalDateTime maxEndTime = null;
-            Duration totalDuration = Duration.ZERO;
-            for (Subtask subtask : subtasksMapInEpic.values()) {
-                if (subtask.getEndTime().isPresent()) {
-                    if (maxEndTime == null || subtask.getEndTime().get().isAfter(maxEndTime)) {
-                        maxEndTime = subtask.getEndTime().get();
-                    }
-                }
-                if (subtask.getDuration().isPresent()) {
-                    totalDuration = totalDuration.plus(subtask.getDuration().get());
-                }
-                if (subtask.getStartTime().isPresent()) {
-                    if (minStartTime == null || subtask.getStartTime().get().isBefore(minStartTime)) {
-                        minStartTime = subtask.getStartTime().get();
-                    }
-                }
-            }
-            epicStartTime = minStartTime;
-            epicEndTime = maxEndTime;
-            epicDuration = totalDuration;
+            LocalDateTime newEpicStartTime = null;
+            Duration sumOfSubtaskDurations = Duration.ZERO;
+            Optional<LocalDateTime> minStartTimeOptional = subtasksMapInEpic.values().stream()
+                    .map(Subtask::getStartTime)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .min(LocalDateTime::compareTo);
+            newEpicStartTime = minStartTimeOptional.orElse(null);
+
+            sumOfSubtaskDurations = subtasksMapInEpic.values().stream()
+                    .map(Subtask::getDuration)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .reduce(Duration.ZERO, Duration::plus);
+            this.setStartTime(newEpicStartTime);
+            this.setDuration(sumOfSubtaskDurations);
         }
-    }
-
-    @Override
-    public void setDuration(Duration duration) {
-        throw new UnsupportedOperationException("Нельзя устанавливать duration напрямую для Epic.");
-    }
-
-    @Override
-    public void setStartTime(LocalDateTime startTime) {
-        throw new UnsupportedOperationException("Нельзя устанавливать startTime напрямую для Epic.");
-    }
-
-
-    public LocalDateTime getEpicStartTime() {
-        return epicStartTime;
-    }
-
-    public LocalDateTime getEpicEndTime() {
-        return epicEndTime;
-    }
-
-    public Duration getEpicDuration() {
-        return epicDuration;
     }
 
     public HashMap<Integer, Subtask> getSubtasksMapInEpic() {
@@ -75,9 +47,7 @@ public class Epic extends Task {
 
     public void setSubtasksMapInEpic(HashMap<Integer, Subtask> subtasksMapInEpic) {
         this.subtasksMapInEpic = subtasksMapInEpic;
+        // Важно: после изменения набора подзадач нужно пересчитать время эпика!
+        calculateTimesEpic();
     }
-
-    private HashMap<Integer, Subtask> subtasksMapInEpic = new HashMap<>();
-
-
 }

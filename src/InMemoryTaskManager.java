@@ -1,15 +1,26 @@
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected HashMap<Integer, Task> taskMap = new HashMap<>();
-    protected HashMap<Integer, Epic> epicMap = new HashMap<>();
-    protected HashMap<Integer, Subtask> subtaskMap = new HashMap<>();
+    protected final Map<Integer, Task> taskMap = new HashMap<>();
+    protected final Map<Integer, Epic> epicMap = new HashMap<>();
+    protected final Map<Integer, Subtask> subtaskMap = new HashMap<>();
+    protected final Set<Task> prioritizedTasks = new TreeSet<>(new Comparator<Task>() {
+        @Override
+        public int compare(Task task1, Task task2) {
+            LocalDateTime time1 = task1.getStartTime().get();
+            LocalDateTime time2 = task2.getStartTime().get();
+            int timeCompare = time1.compareTo(time2);
+            if (timeCompare == 0) {
+                return Integer.compare(task1.getId(), task2.getId());
+            } else {
+                return timeCompare;
+            }
+        }
+    });
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-
     private int idCounter = 0;
 
     public List<Task> getPrioritizedTasks() {
@@ -17,29 +28,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public boolean isOverlap(Task task1, Task task2) {
-        if (!(task1.equals(task2)) && (isHaveTime(task1) && (isHaveTime(task2)))) {
-            LocalDateTime start1;
-            LocalDateTime end1;
-            LocalDateTime start2;
-            LocalDateTime end2;
-            if ((task1 instanceof Epic)) {
-                start1 = ((Epic) task1).getEpicStartTime();
-                end1 = ((Epic) task1).getEpicEndTime();
-            } else {
-                start1 = task1.getStartTime().get();
-                end1 = task1.getEndTime().get();
-            }
-            if ((task2 instanceof Epic)) {
-                start2 = ((Epic) task2).getEpicStartTime();
-                end2 = ((Epic) task2).getEpicEndTime();
-            } else {
-                start2 = task2.getStartTime().get();
-                end2 = task2.getEndTime().get();
-            }
-            if ((end1.isBefore(start2) || end1.isEqual(start2)) || (start1.isAfter(end2) || start1.isEqual(end2))) {
-                return false;
-            } else return true;
-        } else return false;
+        if (task1.equals(task2) || !isHaveTime(task1) || !isHaveTime(task2)) {
+            return false;
+        }
+        LocalDateTime start1 = task1.getStartTime().get();
+        LocalDateTime end1 = task1.getEndTime().get();
+        LocalDateTime start2 = task2.getStartTime().get();
+        LocalDateTime end2 = task2.getEndTime().get();
+        return !((end1.isBefore(start2) || end1.isEqual(start2)) || (start1.isAfter(end2) || start1.isEqual(end2)));
     }
 
     public boolean isOverlapAll(Task task) {
@@ -64,18 +60,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public boolean isHaveTime(Task task) {
-        if ((task instanceof Epic)) {
-            if (((Epic) task).getEpicEndTime() != null &&
-                    ((Epic) task).getEpicStartTime() != null &&
-                    ((Epic) task).getEpicDuration() != Duration.ZERO) {
-                return true;
-            }
-        } else if (task.getStartTime().isPresent() &&
-                task.getEndTime().isPresent() &&
-                !task.getDuration().get().isZero()) {
-            return true;
-        }
-        return false;
+        return task.getStartTime().isPresent() &&
+                task.getDuration().isPresent() &&
+                !task.getDuration().get().isZero();
     }
 
     @Override
@@ -310,37 +297,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    protected final Set<Task> prioritizedTasks = new TreeSet<>(new Comparator<Task>() {
-        @Override
-        public int compare(Task task1, Task task2) {
-            if (task1.getStartTime().isPresent() && task2.getStartTime().isPresent()) {
-                LocalDateTime time1 = task1.getStartTime().get();
-                LocalDateTime time2 = task2.getStartTime().get();
-                int timeCompare = time1.compareTo(time2);
-                if (timeCompare == 0) {
-                    return Integer.compare(task1.getId(), task2.getId());
-                } else {
-                    return timeCompare;
-                }
-            }
-            if (task1.getStartTime().isPresent()) {
-                return -1;
-            } else if (task2.getStartTime().isPresent()) {
-                return 1;
-            } else {
-                return Integer.compare(task1.getId(), task2.getId());
-            }
-        }
-    });
-
-    private boolean checkEpicInMap(Epic epic) {
-        int epicId = epic.getId();
-        if (epicMap.containsKey(epicId)) {
-            return true;
-        }
-        return false;
-    }
-
     private void generateTaskOverlapException(ContextOperation context, Task addedTask, Task taskOverlap) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
         String mutable = "";
@@ -367,11 +323,6 @@ public class InMemoryTaskManager implements TaskManager {
         ));
     }
 
-    private enum ContextOperation {
-        ADD,
-        UPDATE
-    }
-
     private HashMap<Integer, Subtask> getEpicMapBySubtask(Subtask subtask) {
         int epicId = subtask.getEpicId();
         if (!epicMap.containsKey(epicId)) {
@@ -394,9 +345,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ++cheker;
             }
         }
-        if (size == cheker) {
-            return true;
-        } else return false;
+        return size == cheker;
     }
 
     @Override
@@ -414,6 +363,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected void setIdCounter(int idCounter) {
         this.idCounter = idCounter;
+    }
+
+    private enum ContextOperation {
+        ADD,
+        UPDATE
     }
 }
 

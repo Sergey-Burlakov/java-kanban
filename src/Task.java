@@ -56,14 +56,6 @@ public class Task {
         }
     }
 
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
     public String getName() {
         return name;
     }
@@ -104,12 +96,20 @@ public class Task {
         }
     }
 
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
     public Optional<LocalDateTime> getStartTime() {
         if (startTime == null) {
             return Optional.empty();
         } else {
             return Optional.of(startTime);
         }
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     @Override

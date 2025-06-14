@@ -110,7 +110,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addTask(task);
         int taskId = task.getId();
         assertTrue(taskManager.deleteTaskById(task.getId()), "Удаление задачи вернуло False");
-        assertFalse(taskManager.deleteTaskById(task.getId()), "Удаление удаленной задачи вернуло True");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.deleteTaskById(task.getId());
+        },"Удаление удаленной задачи не выкинуло исключение");
         assertTrue(taskManager.getPrioritizedTasks().stream().noneMatch(t -> t.getId() == taskId),
                 "Удаленная задача не должна присутствовать в списке приоритетных задач");
     }
@@ -121,8 +123,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Duration duration = Duration.ofMinutes(120);
         Task task = new Task("Имя задачи", "Описание задачи", startTime, duration);
         taskManager.addTask(task);
-        assertFalse(taskManager.deleteTaskById(Integer.MAX_VALUE), "Вернуло True при удалении " +
-                "несуществующего ID");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.deleteTaskById(Integer.MAX_VALUE);
+        },"Вернуло True при удалении несуществующего ID");
     }
 
     @Test
@@ -260,24 +263,30 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertTrue(taskManager.getPrioritizedTasks().stream().anyMatch(t -> t.getId() == subtask1Id));
         boolean isDeleted = taskManager.deleteEpicById(epicId);
         assertTrue(isDeleted, "Удаление существующего эпика должно вернуть true");
-        assertNull(taskManager.getEpicById(epicId), "Эпик должен быть удален");
-        assertNull(taskManager.getSubtaskById(subtask1Id), "Подзадача 1 должна быть удалена вместе с эпиком");
-        assertNull(taskManager.getSubtaskById(subtask2Id), "Подзадача 2 должна быть удалена вместе с эпиком");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getEpicById(epicId);
+        },"Эпик должен быть удален");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getSubtaskById(subtask1Id);
+        },"Подзадача 1 должна быть удалена вместе с эпиком");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getSubtaskById(subtask2Id);
+        },"Подзадача 2 должна быть удалена вместе с эпиком");
         assertTrue(taskManager.getEpicSubtasks(epicId).isEmpty(), "Список подзадач удаленного эпика должен " +
                 "быть пуст");
         final int finalSubtask1Id = subtask1Id;
         assertTrue(taskManager.getPrioritizedTasks().stream().noneMatch(t -> t.getId() == finalSubtask1Id),
                 "Подзадача 1 должна быть удалена из prioritizedTasks");
-
     }
     @Test
     void shouldReturnFalseWhenDeletingNonExistentEpic() {
         int nonExistentEpicId = 9999;
-        boolean isDeleted = taskManager.deleteEpicById(nonExistentEpicId);
-        assertFalse(isDeleted, "Метод deleteEpicById должен вернуть false при попытке удалить эпик с " +
-                "несуществующим ID");
-        assertNull(taskManager.getEpicById(nonExistentEpicId), "Эпика с несуществующим ID не должно быть " +
-                "в менеджере");
+        assertThrows(NotFoundException.class, () -> {
+            boolean isDeleted = taskManager.deleteEpicById(nonExistentEpicId);
+        },"Метод deleteEpicById должен выкинуть исключение при попытке удалить эпик с несуществующим ID");
+        assertThrows(NotFoundException.class, () -> {
+            taskManager.getEpicById(nonExistentEpicId);
+        },"Эпика с несуществующим ID не должно быть в менеджере");
     }
 
     @Test

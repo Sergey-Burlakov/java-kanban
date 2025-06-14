@@ -47,7 +47,6 @@ public class Epic extends Task {
 
     public void setSubtasksMapInEpic(HashMap<Integer, Subtask> subtasksMapInEpic) {
         this.subtasksMapInEpic = subtasksMapInEpic;
-        // Важно: после изменения набора подзадач нужно пересчитать время эпика!
         calculateTimesEpic();
     }
 }

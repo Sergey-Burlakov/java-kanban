@@ -4,9 +4,9 @@ import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
+    private final HashMap<Integer, Node> historyMap = new HashMap<>();
     private Node head;
     private Node tail;
-    private final HashMap<Integer, Node> historyMap = new HashMap<>();
 
     @Override
     public List<Task> getHistory() {

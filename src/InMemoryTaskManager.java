@@ -126,8 +126,10 @@ public class InMemoryTaskManager implements TaskManager {
         Task task = taskMap.get(id);
         if (task != null) {
             historyManager.add(task);
+            return task;
+        } else {
+            throw new NotFoundException("Задача с id=" + id + " не найдена");
         }
-        return task;
     }
 
     @Override
@@ -135,8 +137,10 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epicMap.get(id);
         if (epic != null) {
             historyManager.add(epic);
+            return epic;
+        } else {
+            throw new NotFoundException("Эпик с id=" + id + " не найден");
         }
-        return epic;
     }
 
     @Override
@@ -144,8 +148,10 @@ public class InMemoryTaskManager implements TaskManager {
         Subtask subtask = subtaskMap.get(id);
         if (subtask != null) {
             historyManager.add(subtask);
+            return subtask;
+        } else {
+            throw new NotFoundException("Подзадача с id=" + id + " не найдена");
         }
-        return subtask;
     }
 
     @Override
@@ -244,13 +250,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean deleteTaskById(int id) {
         Task task = taskMap.get(id);
-        if (task != null) {
-            prioritizedTasks.remove(task);
-            taskMap.remove(id);
-            historyManager.remove(id);
-            return true;
+        if (task == null) {
+            throw new NotFoundException("Задача с id=" + id + " не найдена");
         }
-        return false;
+        prioritizedTasks.remove(task);
+        taskMap.remove(id);
+        historyManager.remove(id);
+        return true;
     }
 
     @Override
@@ -265,8 +271,7 @@ public class InMemoryTaskManager implements TaskManager {
             epicMap.remove(id);
             historyManager.remove(id);
             return true;
-        }
-        return false;
+        } else throw new NotFoundException("Эпик с id=" + id + " не найден");
     }
 
     @Override
@@ -281,8 +286,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(id);
             epic.calculateTimesEpic();
             return true;
-        }
-        return false;
+        } else throw new NotFoundException("Подзадача с id=" + id + " не найдена");
     }
 
     protected void getStatusForEpic(int epicId) {

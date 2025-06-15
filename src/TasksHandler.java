@@ -19,7 +19,7 @@ public class TasksHandler extends BaseHttpHandler {
         try {
             String[] requestArray = httpExchange.getRequestURI().getPath().split("/");
             String method = httpExchange.getRequestMethod();
-            System.out.format("Началась обработка %S /%s запроса от клиента.", method, requestArray[1]);
+            System.out.format("Началась обработка %S /%s запроса от клиента.\n", method, requestArray[1]);
             switch (method) {
                 case "GET" -> get(httpExchange, requestArray);
                 case "POST" -> post(httpExchange, requestArray);

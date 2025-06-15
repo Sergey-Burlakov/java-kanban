@@ -1,15 +1,13 @@
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.google.gson.Gson;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 
-public class PrioritizedHandler extends BaseHttpHandler{
+public class PrioritizedHandler extends BaseHttpHandler {
     TaskManager taskManager;
     Gson gson;
 
-    public PrioritizedHandler(TaskManager taskManager, Gson gson){
+    public PrioritizedHandler(TaskManager taskManager, Gson gson) {
         this.taskManager = taskManager;
         this.gson = gson;
     }
@@ -19,7 +17,7 @@ public class PrioritizedHandler extends BaseHttpHandler{
         try {
             String[] requestArray = httpExchange.getRequestURI().getPath().split("/");
             String method = httpExchange.getRequestMethod();
-            System.out.format("Началась обработка %S /%s запроса от клиента.", method, requestArray[1]);
+            System.out.format("Началась обработка %S /%s запроса от клиента.\n", method, requestArray[1]);
             if (method.equals("GET")) {
                 get(httpExchange, requestArray);
             } else {
@@ -31,8 +29,8 @@ public class PrioritizedHandler extends BaseHttpHandler{
     }
 
     private void get(HttpExchange httpExchange, String[] requestArray) throws IOException {
-        if(requestArray.length == 2){
-            sendText(httpExchange,200,gson.toJson(taskManager.getPrioritizedTasks()));
+        if (requestArray.length == 2) {
+            sendText(httpExchange, 200, gson.toJson(taskManager.getPrioritizedTasks()));
         } else sendErrorRequest(httpExchange);
     }
 

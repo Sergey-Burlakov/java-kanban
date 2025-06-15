@@ -10,6 +10,7 @@ public class EpicSerializer implements JsonSerializer<Epic> {
         result.addProperty("name", epic.getName());
         result.addProperty("description", epic.getDescription());
         result.addProperty("id", epic.getId());
+        result.addProperty("status", epic.getStatus().toString());
         result.add("startTime", context.serialize(epic.getStartTime().orElse(null)));
         result.add("duration", context.serialize(epic.getDuration().orElse(null)));
         result.add("endTime", context.serialize(epic.getEndTime().orElse(null)));

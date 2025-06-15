@@ -10,7 +10,7 @@ class DurationAdapter extends TypeAdapter<Duration> {
 
     @Override
     public void write(final JsonWriter jsonWriter, final Duration duration) throws IOException {
-        if (duration == null){
+        if (duration == null) {
             jsonWriter.nullValue();
         } else {
             jsonWriter.value(duration.toMinutes());
@@ -19,7 +19,7 @@ class DurationAdapter extends TypeAdapter<Duration> {
 
     @Override
     public Duration read(final JsonReader jsonReader) throws IOException {
-        if (jsonReader.peek() == JsonToken.NULL){
+        if (jsonReader.peek() == JsonToken.NULL) {
             jsonReader.nextNull();
             return null;
         } else {

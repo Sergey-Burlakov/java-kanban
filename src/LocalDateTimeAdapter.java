@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
- class LocalDateTimeAdapter extends TypeAdapter <LocalDateTime> {
+class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
     private static final DateTimeFormatter DTF = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
 
     @Override
-    public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException{
-        if (localDateTime == null){
+    public void write(final JsonWriter jsonWriter, final LocalDateTime localDateTime) throws IOException {
+        if (localDateTime == null) {
             jsonWriter.nullValue();
         } else {
             jsonWriter.value(localDateTime.format(DTF));
@@ -20,12 +20,12 @@ import java.time.format.DateTimeFormatter;
     }
 
     @Override
-     public LocalDateTime read(final JsonReader jsonReader) throws IOException {
-        if (jsonReader.peek() == JsonToken.NULL){
+    public LocalDateTime read(final JsonReader jsonReader) throws IOException {
+        if (jsonReader.peek() == JsonToken.NULL) {
             jsonReader.nextNull();
             return null;
         } else {
-            return LocalDateTime.parse(jsonReader.nextString(),DTF);
+            return LocalDateTime.parse(jsonReader.nextString(), DTF);
         }
 
     }

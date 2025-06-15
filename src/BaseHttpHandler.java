@@ -34,7 +34,7 @@ public abstract class BaseHttpHandler implements HttpHandler {
     }
 
     protected void sendIncorrectId(HttpExchange httpExchange, String id) throws IOException {
-        sendText(httpExchange,400,String.format("ID не может быть равен «%s»",id));
+        sendText(httpExchange, 400, String.format("ID не может быть равен «%s»", id));
     }
 
     protected void sendHasInteractions(HttpExchange httpExchange, TaskOverlapException e) throws IOException {

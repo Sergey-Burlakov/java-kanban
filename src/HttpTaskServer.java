@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 
 
 public class HttpTaskServer {
-    private HttpServer server;
-    private TaskManager taskManager;
-    private final Gson gson;
     private static final int PORT = 8080;
+    private final Gson gson;
+    private final HttpServer server;
+    private final TaskManager taskManager;
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {
         this.taskManager = taskManager;
@@ -35,8 +35,8 @@ public class HttpTaskServer {
 
     public static void main(String[] args) throws IOException {
         TaskManager taskManager = Managers.getDefault();
-        HttpTaskServer taskServer  = new HttpTaskServer(taskManager);
-        taskServer .start();
+        HttpTaskServer taskServer = new HttpTaskServer(taskManager);
+        taskServer.start();
     }
 
     public void start() {
@@ -46,7 +46,7 @@ public class HttpTaskServer {
 
     public void stop() {
         server.stop(0);
-        System.out.println("\nСервер на порту " + PORT + " остановлен");
+        System.out.println("Сервер на порту " + PORT + " остановлен");
     }
 
     public Gson getGson() {
